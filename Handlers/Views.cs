@@ -57,7 +57,7 @@ public partial class DisplayPlugin : Plugin
                 e.Add(new LargeContainerElement("Edit view",
                 [
                     new TextBox("Enter a name...", view.Name, "name", onEnter: "Rename()"),
-                    new Selector("template", [new SelectorItem("Default", "default", view.TemplateId == null), ..ViewTemplates.Select(x => new SelectorItem(x.Value.Name, x.Key, view.TemplateId == x.Key))]) {OnChange="SetTemplate()"}
+                    new Selector("template", [new SelectorItem("Default", "default", view.TemplateId == null), ..ViewTemplates.OrderBy(x => x.Value.Name).Select(x => new SelectorItem(x.Value.Name, x.Key, view.TemplateId == x.Key))]) {OnChange="SetTemplate()"}
                 ]) { Buttons =
                 [
                     new Button("Show", $"../show?view={id}", newTab: true),
@@ -74,7 +74,7 @@ public partial class DisplayPlugin : Plugin
                         view.UnlockSave();
                         continue;
                     }
-                    e.Add(new ContainerElement(null, new Selector($"add-{counter}", [new SelectorItem("Add", "default", true), ..ElementTemplates.Select(x => new SelectorItem(x.Value.Name, x.Key))]) {OnChange=$"ElementAdd('{counter}')"}));
+                    e.Add(new ContainerElement(null, new Selector($"add-{counter}", [new SelectorItem("Add", "default", true), ..ElementTemplates.OrderBy(x => x.Value.Name).Select(x => new SelectorItem(x.Value.Name, x.Key))]) {OnChange=$"ElementAdd('{counter}')"}));
                     var elementElement = new ContainerElement(elementTemplate.Name);
                     e.Add(elementElement);
                     int componentCounter = 0;
@@ -83,7 +83,7 @@ public partial class DisplayPlugin : Plugin
                         elementElement.Contents.Add(new Paragraph($"{component.Name}:"));
                         elementElement.Contents.Add(component.SupportedFileExtensions == null
                             ? new TextBox("Enter something...", value, $"value-{counter}-{componentCounter}", onInput: $"ElementChanged('{counter}')")
-                            : new Selector($"value-{counter}-{componentCounter}", [new SelectorItem("Select file...", "null", value == null), ..Files.Where(x => FromKeySafe(x.Key).SplitAtLast('.', out _, out var extension) && component.SupportedFileExtensions.Contains(extension)).Select(x => new SelectorItem(FromKeySafe(x.Key), x.Key, x.Key == value))]) {OnChange = $"ElementChanged('{counter}')"});
+                            : new Selector($"value-{counter}-{componentCounter}", [new SelectorItem("Select file...", "null", value == null), ..Files.Where(x => FromKeySafe(x.Key).SplitAtLast('.', out _, out var extension) && component.SupportedFileExtensions.Contains(extension)).OrderBy(x => FromKeySafe(x.Key)).Select(x => new SelectorItem(FromKeySafe(x.Key), x.Key, x.Key == value))]) {OnChange = $"ElementChanged('{counter}')"});
                         componentCounter++;
                     }
                     if (elementTemplate.Components.Count > 0)
@@ -91,7 +91,7 @@ public partial class DisplayPlugin : Plugin
                     elementElement.Buttons.Add(new ButtonJS("Delete", $"ElementDelete('{counter}')", "red", id: $"delete-{counter}"));
                     counter++;
                 }
-                e.Add(new ContainerElement(null, new Selector($"add-{counter}", [new SelectorItem("Add", "default", true), ..ElementTemplates.Select(x => new SelectorItem(x.Value.Name, x.Key))]) {OnChange=$"ElementAdd('{counter}')"}));
+                e.Add(new ContainerElement(null, new Selector($"add-{counter}", [new SelectorItem("Add", "default", true), ..ElementTemplates.OrderBy(x => x.Value.Name).Select(x => new SelectorItem(x.Value.Name, x.Key))]) {OnChange=$"ElementAdd('{counter}')"}));
                 page.Scripts.Add(new CustomScript($"for (var i = 0; i <= {counter}; i++)\n\tdocument.getElementById(`add-${{i}}`).value = \"default\";"));
             } break;
 

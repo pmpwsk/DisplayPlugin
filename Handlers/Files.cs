@@ -19,10 +19,10 @@ public partial class DisplayPlugin : Plugin
                 e.Add(new ContainerElement("Add/change", new FileSelector("files", true)) { Button = new ButtonJS("Upload", "Upload()", "green", id: "upload") });
                 page.AddError();
                 bool foundAny = false;
-                foreach (var kv in Files.OrderBy(x => FromKeySafe(x.Key)))
+                foreach (var kv in Files.OrderBy(x => Parsers.FromBase64PathSafe(x.Key)))
                 {
                     foundAny = true;
-                    string name = FromKeySafe(kv.Key);
+                    string name = Parsers.FromBase64PathSafe(kv.Key);
                     e.Add(new ContainerElement(name, $"{kv.Value.ModifiedUTC.ToLongDateString()} UTC") { Buttons =
                     [
                         new Button("View", $"files/{HttpUtility.UrlEncode(name)}", newTab: true),
@@ -41,7 +41,7 @@ public partial class DisplayPlugin : Plugin
                     throw new BadRequestSignal();
                 foreach (var file in req.Files)
                 {
-                    string key = ToKeySafe(file.FileName);
+                    string key = Parsers.ToBase64PathSafe(file.FileName);
                     file.Download($"../DisplayPlugin.Files/{key}", long.MaxValue);
                     if (Files.TryGetValue(key, out var data))
                     {
@@ -72,7 +72,7 @@ public partial class DisplayPlugin : Plugin
             default:
             {
                 string name = HttpUtility.UrlDecode(req.Path[7..]);
-                string key = ToKeySafe(name);
+                string key = Parsers.ToBase64PathSafe(name);
                 if (Files.TryGetValue(key, out var data))
                 {
                     if (name.SplitAtLast('.', out _, out var extension))

@@ -71,7 +71,7 @@ public partial class DisplayPlugin : Plugin
                     int counter = 0;
                     foreach (var (component, componentValue) in elementTemplate.Components.Zip(element.Values))
                     {
-                        string val = component.SupportedFileExtensions != null ? $"{req.PluginPathPrefix}/files/{HttpUtility.UrlEncode(FromKeySafe(componentValue))}" : componentValue;
+                        string val = component.SupportedFileExtensions != null ? $"{req.PluginPathPrefix}/files/{HttpUtility.UrlEncode(Parsers.FromBase64PathSafe(componentValue))}" : componentValue;
                         code = code.Replace($"[VALUE_{counter}]", val)
                             .Replace($"<VALUE_{counter}>", val.HtmlSafe())
                             .Replace($"\"VALUE_{counter}\"", val.HtmlValueSafe());

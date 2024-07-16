@@ -83,7 +83,7 @@ public partial class DisplayPlugin : Plugin
                         elementElement.Contents.Add(new Paragraph($"{component.Name}:"));
                         elementElement.Contents.Add(component.SupportedFileExtensions == null
                             ? new TextBox("Enter something...", value, $"value-{counter}-{componentCounter}", onInput: $"ElementChanged('{counter}')")
-                            : new Selector($"value-{counter}-{componentCounter}", [new SelectorItem("Select file...", "null", value == null), ..Files.Where(x => FromKeySafe(x.Key).SplitAtLast('.', out _, out var extension) && component.SupportedFileExtensions.Contains(extension)).OrderBy(x => FromKeySafe(x.Key)).Select(x => new SelectorItem(FromKeySafe(x.Key), x.Key, x.Key == value))]) {OnChange = $"ElementChanged('{counter}')"});
+                            : new Selector($"value-{counter}-{componentCounter}", [new SelectorItem("Select file...", "null", value == null), ..Files.Where(x => Parsers.FromBase64PathSafe(x.Key).SplitAtLast('.', out _, out var extension) && component.SupportedFileExtensions.Contains(extension)).OrderBy(x => Parsers.FromBase64PathSafe(x.Key)).Select(x => new SelectorItem(Parsers.FromBase64PathSafe(x.Key), x.Key, x.Key == value))]) {OnChange = $"ElementChanged('{counter}')"});
                         componentCounter++;
                     }
                     if (elementTemplate.Components.Count > 0)

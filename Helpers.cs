@@ -39,10 +39,4 @@ public partial class DisplayPlugin : Plugin
         if (req.User.AccessLevel < 50)
             throw new ForbiddenSignal();
     }
-
-    private static string ToKeySafe(string value)
-        => Convert.ToBase64String(Encoding.UTF8.GetBytes(value)).Replace('/', '_').Replace('=', '-');
-
-    private static string FromKeySafe(string base64)
-        => Encoding.UTF8.GetString(Convert.FromBase64String(base64.Replace('_', '/').Replace('-', '=')));
 }

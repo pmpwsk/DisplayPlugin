@@ -121,7 +121,7 @@ public partial class DisplayPlugin : Plugin
                     }
                 }
                 else throw new BadRequestSignal();
-                req.Context.Response.OnCompleted(Unsubscribe, req);
+                req.KeepEventAliveCancelled += Unsubscribe;
                 await req.KeepEventAlive();
             } break;
             

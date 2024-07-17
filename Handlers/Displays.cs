@@ -105,23 +105,20 @@ public partial class DisplayPlugin : Plugin
                     throw new NotFoundSignal();
                 if (!Displays.TryGetValue(id, out var display))
                     throw new NotFoundSignal();
-                string? oldViewId = display.ViewId;
+                if (display.ViewId != null)
+                    lock (ViewSubscribers)
+                        if (ViewSubscribers.TryGetValue(display.ViewId, out var viewSet))
+                        {
+                            lock (DisplaySubscribers)
+                                if (DisplaySubscribers.TryGetValue(id, out var displaySet))
+                                    foreach (var r in displaySet)
+                                        viewSet.Remove(r);
+                            if (viewSet.Count == 0)
+                                ViewSubscribers.Remove(display.ViewId);
+                        }
                 display.Lock();
                 display.ViewId = viewId;
                 display.UnlockSave();
-                lock (ViewSubscribers)
-                {
-                    if (oldViewId != null && ViewSubscribers.TryGetValue(oldViewId, out var viewSet))
-                        if (viewSet.Remove(req) && viewSet.Count == 0)
-                            ViewSubscribers.Remove(oldViewId);
-
-                    if (viewId != null)
-                    {
-                        if (!ViewSubscribers.TryGetValue(viewId, out viewSet))
-                            ViewSubscribers[viewId] = viewSet = [];
-                        viewSet.Add(req);
-                    }
-                }
                 await NotifyViewSubscribersForDisplay(id);
             } break;
             

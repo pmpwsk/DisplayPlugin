@@ -34,30 +34,28 @@ public partial class DisplayPlugin : Plugin
                 await NotifyViewSubscribersForView(kv.Key);
     }
 
-    private Task Unsubscribe(object obj)
+    private Task Unsubscribe(Request req)
     {
-        if (obj is Request req)
+        if (req.Query.TryGetValue("display", out var displayId))
         {
-            if (req.Query.TryGetValue("display", out var displayId))
-            {
-                lock (DisplaySubscribers)
-                    if (DisplaySubscribers.TryGetValue(displayId, out var displaySet))
-                        if (displaySet.Remove(req) && displaySet.Count == 0)
-                            DisplaySubscribers.Remove(displayId);
+            lock (DisplaySubscribers)
+                if (DisplaySubscribers.TryGetValue(displayId, out var displaySet))
+                    if (displaySet.Remove(req) && displaySet.Count == 0)
+                        DisplaySubscribers.Remove(displayId);
 
-                if (Displays.TryGetValue(displayId, out var display) && display.ViewId != null)
-                    lock (ViewSubscribers)
-                        if (ViewSubscribers.TryGetValue(display.ViewId, out var viewSet))
-                            if (viewSet.Remove(req) && viewSet.Count == 0)
-                                ViewSubscribers.Remove(display.ViewId);
-            }
-
-            if (req.Query.TryGetValue("view", out var viewId))
-                lock(ViewSubscribers)
-                    if (ViewSubscribers.TryGetValue(viewId, out var viewSet))
+            if (Displays.TryGetValue(displayId, out var display) && display.ViewId != null)
+                lock (ViewSubscribers)
+                    if (ViewSubscribers.TryGetValue(display.ViewId, out var viewSet))
                         if (viewSet.Remove(req) && viewSet.Count == 0)
-                            ViewSubscribers.Remove(viewId);
+                            ViewSubscribers.Remove(display.ViewId);
         }
+
+        if (req.Query.TryGetValue("view", out var viewId))
+            lock(ViewSubscribers)
+                if (ViewSubscribers.TryGetValue(viewId, out var viewSet))
+                    if (viewSet.Remove(req) && viewSet.Count == 0)
+                        ViewSubscribers.Remove(viewId);
+
         return Task.CompletedTask;
     }
 }

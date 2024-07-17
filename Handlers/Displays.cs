@@ -70,6 +70,8 @@ public partial class DisplayPlugin : Plugin
                 if (!Displays.ContainsKey(id))
                     throw new NotFoundSignal();
                 Displays.Delete(id);
+                lock (DisplaySubscribers)
+                    DisplaySubscribers.Remove(id);
             } break;
 
             case "/displays/edit/rename":

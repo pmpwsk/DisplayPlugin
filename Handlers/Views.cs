@@ -102,7 +102,8 @@ public partial class DisplayPlugin : Plugin
                 if (!Views.ContainsKey(id))
                     throw new NotFoundSignal();
                 Views.Delete(id);
-                await NotifyViewSubscribersForView(id);
+                lock (ViewSubscribers)
+                    ViewSubscribers.Remove(id);
             } break;
 
             case "/views/edit/rename":

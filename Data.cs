@@ -2,6 +2,12 @@ namespace uwap.WebFramework.Plugins;
 
 public partial class DisplayPlugin : Plugin
 {
+    /// <summary>
+    /// Whether to send sandbox headers with /show or not.<br/>
+    /// Default: false
+    /// </summary>
+    public bool SandboxViewer = false;
+
     private Dictionary<string, HashSet<Request>> DisplaySubscribers = [];
 
     private Dictionary<string, HashSet<Request>> ViewSubscribers = [];

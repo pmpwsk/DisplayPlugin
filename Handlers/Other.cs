@@ -36,6 +36,8 @@ public partial class DisplayPlugin : Plugin
             // SHOW DISPLAY/VIEW
             case "/show":
             { req.ForceGET();
+                if (SandboxViewer)
+                    req.Context.Response.Headers.ContentSecurityPolicy = "sandbox allow-scripts;";
                 View? view;
                 if (req.Query.TryGetValue("display", out var displayId))
                 {
@@ -88,6 +90,7 @@ public partial class DisplayPlugin : Plugin
             // REFRESH EVENT
             case "/refresh-event":
             { req.ForceGET();
+                req.CorsDomain = "*";
                 if (req.Query.TryGetValue("display", out var displayId))
                 {
                     if (!(Displays.TryGetValue(displayId, out var display) && (display.ViewId == null || Views.ContainsKey(display.ViewId))))

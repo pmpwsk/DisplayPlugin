@@ -73,6 +73,7 @@ public partial class DisplayPlugin : Plugin
             {
                 string name = HttpUtility.UrlDecode(req.Path[7..]);
                 string key = Parsers.ToBase64PathSafe(name);
+                req.CorsDomain = "*";
                 if (Files.TryGetValue(key, out var data))
                 {
                     if (name.SplitAtLast('.', out _, out var extension))
